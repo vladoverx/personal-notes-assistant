@@ -20,13 +20,19 @@ class Settings(BaseSettings):
     # API
     api_prefix: str = "/api/v1"
     cors_origins: list[str] = [
+        # Local dev
         "http://localhost:3000",
         "http://localhost:8000",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:8000",
+        # Production UI origins
+        "https://notekin.online",
+        "https://www.notekin.online",
+        # Vercel preview deployments (*.vercel.app): prefer regex below
     ]
 
-    cors_origin_regex: str | None = None
+    # Allow Vercel preview URLs and subdomains
+    cors_origin_regex: str | None = r"https?:\/\/(.*\.)?vercel\.app$"
     trusted_hosts: list[str] = ["*"]
     root_path: str = ""
 

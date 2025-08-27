@@ -26,13 +26,14 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
+        # Allow connections to our API host and Supabase
         csp_policy = (
             "default-src 'self'; "
             "script-src 'self'; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "img-src 'self' data: https:; "
             "font-src 'self' data: https://fonts.gstatic.com; "
-            "connect-src 'self'; "
+            "connect-src 'self' https://api.notekin.online https://*.supabase.co; "
             "frame-ancestors 'none';"
         )
         response.headers["Content-Security-Policy"] = csp_policy

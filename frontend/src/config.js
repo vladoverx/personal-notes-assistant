@@ -7,6 +7,6 @@ export const API_BASE_URL = runtimeConfig.API_BASE_URL || 'http://localhost:8000
 export const ENABLE_SIGNUP_UI = runtimeConfig.ENABLE_SIGNUP_UI || false;
 
 // Contact email to display when signups are closed
-export const SIGNUP_CONTACT_EMAIL = runtimeConfig.SIGNUP_CONTACT_EMAIL || 'bug.vlad67@gmail.com';
+export const SIGNUP_CONTACT_EMAIL = runtimeConfig.SIGNUP_CONTACT_EMAIL || 'support@notekin.online';
 
 
