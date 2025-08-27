@@ -11,6 +11,12 @@
 api.notekin.online {
   encode gzip zstd
 
+  log {
+    level info
+    format json
+    output stdout
+  }
+
   @api path /api/*
   reverse_proxy backend:8000 {
     header_up X-Forwarded-Proto {scheme}
