@@ -1,0 +1,20 @@
+# Supabase local metadata/cache
+.branches/
+.temp/
+.cache/
+
+# Env files
+.env
+.env.local
+.env.*.local
+.env.keys
+
+# Edge Functions or other build outputs
+functions/**/node_modules/
+functions/**/dist/
+functions/**/build/
+functions/**/.env
+
+# OS/editor
+.DS_Store
+Thumbs.db

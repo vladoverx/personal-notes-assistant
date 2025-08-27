@@ -1,0 +1,25 @@
+# Replace example.com with your API domain or leave :80 for HTTP only during initial test
+# For automatic HTTPS, use a real domain pointing to the EC2 Elastic IP.
+
+{
+  # Optional: email for Let's Encrypt
+  email {env.CADDY_EMAIL}
+}
+
+# If you do not have a domain yet, temporarily expose HTTP only with :80
+# API host for automatic HTTPS
+api.notekin.online {
+  encode gzip zstd
+
+  @api path /api/*
+  reverse_proxy backend:8000 {
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Forwarded-For {remote}
+    header_up Host {host}
+  }
+
+  # Health endpoint for local checks
+  handle_path /health {
+    respond 200
+  }
+}

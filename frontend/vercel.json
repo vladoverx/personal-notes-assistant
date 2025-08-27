@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://api.notekin.online/api/:path*" }
+  ]
+}
+
+

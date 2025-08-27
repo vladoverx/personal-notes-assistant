@@ -1,0 +1,56 @@
+[project]
+name = "personal-notes-assistant-backend"
+version = "0.1.0"
+description = "Personal notes assistant backend with FastAPI"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.116.1",
+    "openai>=1.101.0",
+    "pydantic[email]>=2",
+    "pydantic-settings>=2.10.1",
+    "python-multipart>=0.0.20",
+    "supabase>=2.18.1",
+    "uvicorn>=0.35.0",
+    "gunicorn>=22.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.9",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E4", "E7", "E9",  # pycodestyle errors
+    "F",               # Pyflakes
+    "I",               # isort
+    "N",               # pep8-naming
+    "W",               # pycodestyle warnings
+    "B",               # flake8-bugbear
+    "C",               # flake8-comprehensions
+    "UP",              # pyupgrade
+    "ARG",             # flake8-unused-arguments
+    "SIM",             # flake8-simplify
+    "TCH",             # flake8-type-checking
+    "TID",             # flake8-tidy-imports
+    "Q",               # flake8-quotes
+]
+ignore = ["E501", "B008", "C901"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["uv_build>=0.8.11,<0.9.0"]
+build-backend = "uv_build"

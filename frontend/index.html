@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Personal Note Assistant</title>
+    <meta name="theme-color" content="#065f46" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <script src="/app-config.js"></script>
+    <script type="module" src="src/main.js"></script>
+  </head>
+  <body>
+    <main>
+      <!-- Auth Page -->
+      <section id="auth-page" class="auth-container">
+        <div class="brand-intro">
+          <div class="logo-mark" aria-hidden="true">🧠</div>
+          <h1 class="brand-title">Personal Note Assistant</h1>
+          <p class="brand-subtitle">AI-powered note management</p>
+        </div>
+        <div class="auth-card">
+          <div class="auth-card-header">
+            <h2 class="welcome-title">Welcome</h2>
+            <p class="welcome-subtitle">Sign in to your account or create a new one to get started</p>
+          </div>
+
+          <div class="segmented-control" role="tablist" aria-label="Authentication">
+            <button id="show-signin" class="segmented-item active" role="tab" aria-selected="true" aria-controls="signin-form">Sign In</button>
+            <button id="show-signup" class="segmented-item" role="tab" aria-selected="false" aria-controls="signup-form">Sign Up</button>
+          </div>
+
+          <!-- Sign In Form -->
+          <form id="signin-form" class="auth-form" role="tabpanel" aria-labelledby="show-signin">
+            <div class="form-group">
+              <label for="signin-email">Email</label>
+              <input type="email" id="signin-email" required placeholder="Enter your email" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="signin-password">Password</label>
+              <input type="password" id="signin-password" required placeholder="Enter your password" autocomplete="current-password" />
+            </div>
+            <button type="submit" class="btn primary full-width">Sign In</button>
+          </form>
+
+          <!-- Sign Up Form -->
+          <form id="signup-form" class="auth-form hidden" role="tabpanel" aria-labelledby="show-signup">
+            <div class="form-group">
+              <label for="signup-email">Email</label>
+              <input type="email" id="signup-email" required placeholder="Enter your email" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Password</label>
+              <input type="password" id="signup-password" required placeholder="Enter your password (min 8 characters)" autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+              <label for="signup-confirm-password">Confirm Password</label>
+              <input type="password" id="signup-confirm-password" required placeholder="Confirm your password" autocomplete="new-password" />
+            </div>
+            <button type="submit" class="btn primary full-width">Sign Up</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Main App (hidden until authenticated) -->
+      <div id="app-content" class="hidden">
+        <header class="topbar card">
+          <div class="brand">
+            <div class="brand-text">
+              <h1>Personal Note Assistant</h1>
+              <p class="subtitle">AI-powered note management</p>
+            </div>
+          </div>
+          <div class="nav-tabs">
+            <button id="tab-notes" class="btn primary" type="button">Notes</button>
+            <button id="tab-chat" class="btn" type="button">Chat</button>
+            <button id="signout-btn" class="btn" type="button">Sign Out</button>
+          </div>
+        </header>
+
+        <!-- Notes Page -->
+        <section id="notes-page">
+          <div class="searchbar">
+            <div class="search-input">
+              <svg class="icon search" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              <input type="search" id="search" placeholder="Search notes..." />
+            </div>
+            <div class="search-actions">
+              <div class="filters">
+                <select id="filter-category" class="filter-select" aria-label="Filter by category">
+                  <option value="">All categories</option>
+                </select>
+                <select id="filter-tag" class="filter-select" aria-label="Filter by tag">
+                  <option value="">All tags</option>
+                </select>
+              </div>
+              <button id="new-note-btn" class="btn icon" type="button" title="New note" aria-label="New note">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tiles grid view -->
+          <section class="list">
+            <div id="notes-grid" class="notes-grid"></div>
+          </section>
+
+          <!-- Centered modal editor overlay (hidden until create/edit) -->
+          <div id="note-modal" class="modal" aria-hidden="true">
+            <div class="modal-backdrop" id="note-modal-backdrop" aria-hidden="true"></div>
+            <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="note-modal-title">
+              <form id="note-form" class="card" autocomplete="off">
+                <div class="form-row">
+                  <input type="text" id="note-title" placeholder="Title" aria-label="Title" />
+                </div>
+                <div class="form-row">
+                  <select id="note-category" aria-label="Category">
+                    <option value="">No category</option>
+                    <option value="note">Note</option>
+                    <option value="task">Task</option>
+                    <option value="event">Event</option>
+                    <option value="recipe">Recipe</option>
+                    <option value="vocabulary">Vocabulary</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <textarea id="note-content" placeholder="Write a note..." aria-label="Content"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button id="save-note" type="submit" class="btn primary">Save</button>
+                  <button id="cancel-edit" type="button" class="btn">Cancel</button>
+                  <button id="delete-note" type="button" class="btn danger" aria-label="Delete note">Delete</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chat Page -->
+        <section id="chat-page" class="chat-container hidden">
+          <div class="chat-messages">
+            <div id="chat-empty" class="chat-empty" aria-hidden="true">Ask me anything about your notes</div>
+            <div id="chat-log" class="chat-log"></div>
+          </div>
+          <div class="chat-input-container">
+            <div id="chat-hint" class="chat-hint" role="status" aria-live="polite">
+              <span class="hint-icon" aria-hidden="true">✨</span>
+              <span class="hint-text">I can help you manage your thoughts and ideas — just share them</span>
+            </div>
+            <form id="chat-form" class="chat-input-form" autocomplete="off">
+              <div class="input-wrapper">
+                <textarea id="chat-input" placeholder="Message Note Assistant..." required class="chat-input" rows="1" aria-describedby="chat-hint"></textarea>
+                <button type="submit" class="send-button" aria-label="Send message">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
+
+
