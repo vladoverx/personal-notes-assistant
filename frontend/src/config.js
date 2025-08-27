@@ -4,9 +4,9 @@ export const API_BASE_URL = runtimeConfig.API_BASE_URL || 'http://localhost:8000
 
 // Auth UI configuration
 // If set to false, the Sign Up tab/form is hidden and a friendly message is shown.
-export const ENABLE_SIGNUP_UI = false;
+export const ENABLE_SIGNUP_UI = runtimeConfig.ENABLE_SIGNUP_UI || false;
 
 // Contact email to display when signups are closed
-export const SIGNUP_CONTACT_EMAIL = runtimeConfig.SIGNUP_CONTACT_EMAIL || 'support@yourdomain.com';
+export const SIGNUP_CONTACT_EMAIL = runtimeConfig.SIGNUP_CONTACT_EMAIL || 'bug.vlad67@gmail.com';
 
 
