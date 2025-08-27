@@ -58,8 +58,14 @@ export async function validateToken() {
 
 async function handleSignIn(event) {
   event.preventDefault();
-  const email = document.getElementById('signin-email').value;
+  const email = document.getElementById('signin-email').value?.trim();
   const password = document.getElementById('signin-password').value;
+  
+  if (!email || !password) {
+    alert('Please enter both email and password');
+    return;
+  }
+  
   try {
     const data = await api.signIn(email, password);
     api.setSession(data);
@@ -88,11 +94,18 @@ async function handleSignUp(event) {
       : 'Signups are currently closed. Please contact the support to request an invite.');
     return;
   }
-  const email = document.getElementById('signup-email').value;
+  const email = document.getElementById('signup-email').value?.trim();
   const password = document.getElementById('signup-password').value;
   const confirmPassword = document.getElementById('signup-confirm-password').value;
+  
+  if (!email || !password || !confirmPassword) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
   if (password !== confirmPassword) { alert('Passwords do not match'); return; }
   if (password.length < 8) { alert('Password must be at least 8 characters long'); return; }
+  
   try {
     const data = await api.signUp(email, password);
     if (data && data.access_token) {
