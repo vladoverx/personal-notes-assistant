@@ -9,7 +9,7 @@ services:
       APP_DEBUG: ${APP_DEBUG:-false}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/v1/health"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/v1/health/"]
       interval: 10s
       timeout: 3s
       retries: 5
