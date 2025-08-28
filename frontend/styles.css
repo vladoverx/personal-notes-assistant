@@ -226,7 +226,7 @@ body.chat-page .topbar { margin-bottom: 1.5rem; border-radius: 12px; }
 }
 .modal .card { 
   border-radius: 16px; 
-  box-shadow: 0 24px 48px rgba(15,23,42,0.25);
+  box-shadow: none;
   background: #fff;
   padding: 1.5rem;
 }
