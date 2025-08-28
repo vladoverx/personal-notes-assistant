@@ -238,6 +238,27 @@ class AgentService:
             return obj.get(key)
         return getattr(obj, key, None)
 
+    def _extract_function_calls(self, response: Any) -> list[dict[str, Any]]:
+        """Return function calls from output items."""
+        calls: list[dict[str, Any]] = []
+
+        try:
+            output_items = getattr(response, "output", None) or []
+            for item in output_items:
+                if self._get_field(item, "type") == "function_call":
+                    calls.append(
+                        {
+                            "name": self._get_field(item, "name") or "",
+                            "arguments": self._get_field(item, "arguments") or "{}",
+                            "call_id": self._get_field(item, "call_id") or self._get_field(item, "id"),
+                        }
+                    )
+        except Exception:
+            # Defensive: prefer to continue without failing the whole request
+            pass
+
+        return calls
+
     async def _tool_search_notes(
         self,
         *,
@@ -583,14 +604,47 @@ class AgentService:
                 )
                 response = await self._client.responses.create(**create_kwargs)
             except Exception as err:  # pragma: no cover - network errors
-                logger.error("Responses API call failed (stream mode): %s", err, extra={"user_id": str(user_id)})
-                yield {"type": "error", "message": "I'm unable to complete that request right now. Please try again."}
-                return
+                err_text = str(err)
+                # If a stale previous_response_id points to a turn that requested tools
+                # and hasn't received outputs yet, the API returns this 400.
+                if "No tool output found for function call" in err_text:
+                    logger.warning(
+                        "Responses API reported missing tool outputs for previous_response_id; restarting thread",
+                        extra={"user_id": str(user_id)},
+                    )
+                    try:
+                        create_kwargs = self._build_response_kwargs(
+                            tools=tools,
+                            next_inputs=[{"role": "user", "content": message}],
+                            instructions=instructions,
+                            allowed_tools_choice=allowed_tools_choice,
+                            previous_response_id=None,
+                        )
+                        response = await self._client.responses.create(**create_kwargs)
+                        previous_response_id = getattr(response, "id", None)
+                    except Exception as err2:  # pragma: no cover - defensive
+                        logger.error(
+                            "Responses API retry (fresh thread) failed: %s", err2, extra={"user_id": str(user_id)}
+                        )
+                        yield {
+                            "type": "error",
+                            "message": "We couldn't complete the request. Please try again.",
+                        }
+                        return
+                else:
+                    logger.error(
+                        "Responses API call failed (stream mode): %s", err_text, extra={"user_id": str(user_id)}
+                    )
+                    yield {
+                        "type": "error",
+                        "message": "I'm unable to complete that request right now. Please try again.",
+                    }
+                    return
 
             previous_response_id = getattr(response, "id", None)
             output_items = response.output or []
 
-            pending_tool_calls = [item for item in output_items if self._get_field(item, "type") == "function_call"]
+            pending_tool_calls = self._extract_function_calls(response)
             if not pending_tool_calls:
                 # Final answer – stream tokens via Responses streaming API
                 logger.info("[stream] Finalizing with streamed output", extra={
@@ -602,10 +656,10 @@ class AgentService:
                 yield {"type": "final_start"}
 
                 try:
-                    # Use the previous response context if set; otherwise stream a fresh turn
+                    # When streaming the completion for an already-created response, provide only previous_response_id.
                     stream_kwargs = self._build_response_kwargs(
                         tools=tools,
-                        next_inputs=next_inputs or [{"role": "user", "content": message}],
+                        next_inputs=[],
                         instructions=instructions,
                         allowed_tools_choice=allowed_tools_choice,
                         previous_response_id=previous_response_id,
