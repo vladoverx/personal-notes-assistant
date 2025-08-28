@@ -2,6 +2,9 @@
 
 Lightweight, production-ready notes app with a clean FastAPI backend, a static JS frontend, and AI-powered enrichment. It uses Supabase for auth and data, OpenAI for chat and notes enrichment, and a simple production deployment path: backend on AWS EC2 (Docker + Caddy) and frontend on Vercel.
 
+## Project Demo
+Here is a quick [demo](https://drive.google.com/file/d/1lv1eidTp2-jXlqw-iSPKrdID51KfwoaV/preview) of how the application works.
+
 ## Tools & architecture (at a glance)
 - **Backend (FastAPI + Gunicorn/Uvicorn)**: Typed, fast, and robust REST + SSE server. Structured settings via Pydantic; packaged and installed with `uv` during image build.
 - **Data & Auth (Supabase)**: PostgREST with row-level security; per-request bearer ensures user isolation. Admin client for background jobs.
